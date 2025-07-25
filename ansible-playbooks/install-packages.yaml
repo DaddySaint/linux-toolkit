@@ -1,0 +1,16 @@
+- name: Install Basic Server Packages
+  hosts: servers
+  become: yes
+
+  tasks:
+    - name: Update apt cache and install packages
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - git
+        - python3-pip
+        - htop
+        - ncdu
+        - docker.io
