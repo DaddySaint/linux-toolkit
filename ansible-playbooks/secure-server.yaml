@@ -1,0 +1,39 @@
+---
+- name: Secure Server
+  hosts: servers
+  become: yes
+
+  tasks:
+    - name: Deny all incoming traffic by default
+      community.general.ufw:
+        state: enabled
+        policy: deny
+        direction: incoming
+
+    - name: Allow SSH connections
+      community.general.ufw:
+        rule: allow
+        name: Open SSH
+
+    - name: Disallow root login over SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: Restart sshd
+
+        #   - name: Disallow password authentication over SSH
+        #linefile:
+        #path: /etc/ssh/sshd_config
+        #regexp: 'PasswordAuthentication'
+        #line: 'PasswordAuthentication no'
+        #notify: Restart sshd
+
+
+   handlers:
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted
+
+
